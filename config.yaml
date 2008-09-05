@@ -1,0 +1,15 @@
+rrdpath: data
+graphpath: graphs
+pollsessions: 256
+maxruntime: 240
+community: Canopy
+verbose: yes
+
+ranges:
+    # Site A, AP 1 & 2
+    - cidr: 10.1.101.0/25
+    - cidr: 10.1.111.0/25
+    
+    # Site B, AP 1
+    - cidr: 10.28.101.0/25
+

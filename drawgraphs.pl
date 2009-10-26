@@ -29,58 +29,58 @@ my $startTime = time();
 # Make sure config file was provided and load it
 my $cfgFile;
 if (defined $ARGV[0]) {
-	$cfgFile = $ARGV[0];
+  $cfgFile = $ARGV[0];
 } else {
-	print "Usage: bongo.pl config.yaml\n";
-	exit 1;
+  print "Usage: bongo.pl config.yaml\n";
+  exit 1;
 }
 my $config = YAML::LoadFile($cfgFile);
 
 my $verbose = "no";
 if (exists($config->{verbose})) {
-	$verbose = $config->{verbose};
+  $verbose = $config->{verbose};
 }
 
 sub drawGraph {
-	if (-d $File::Find::name) {
-		return;
-	}
-	
-	if ($_ eq ".DS_Store") {
-		return;
-	}
-	
-	my $rra = $File::Find::name;
-	my $graphPrefix = $_;
-	$graphPrefix =~ s/\.rra//;
-	
-	my $macOld = Net::MAC->new('mac' => $graphPrefix);
-	my $mac = $macOld->convert(
-		'bit_group' => 8,
-		'delimiter' => ':'
-		)->get_mac();
-	
-	
-	my $graphPath = $config->{graphpath} . '/' . $graphPrefix;
-	mkpath($graphPath);
-		
-	my $rrd = RRD::Simple->new(file=>$rra);
-	
-	# graph config options
-	my @periods = qw(hour day week month);
-	my $gwidth = 550;
-	
-	# Draw signal jitter graph
-	my %jg = $rrd->graph($rra,
-		destination => $graphPath,
-		basename => "jitter",
-		periods => [@periods],
-		sources => [ qw(jitter) ],
-		source_labels => [ qw(Jitter) ],
-		title => "Multipath Interference for $mac",
-		extended_legend => "true",
-		width => $gwidth,
-	);
+  if (-d $File::Find::name) {
+    return;
+  }
+  
+  if ($_ eq ".DS_Store") {
+    return;
+  }
+  
+  my $rra = $File::Find::name;
+  my $graphPrefix = $_;
+  $graphPrefix =~ s/\.rra//;
+  
+  my $macOld = Net::MAC->new('mac' => $graphPrefix);
+  my $mac = $macOld->convert(
+    'bit_group' => 8,
+    'delimiter' => ':'
+    )->get_mac();
+  
+  
+  my $graphPath = $config->{graphpath} . '/' . $graphPrefix;
+  mkpath($graphPath);
+  
+  my $rrd = RRD::Simple->new(file=>$rra);
+  
+  # graph config options
+  my @periods = qw(hour day week month);
+  my $gwidth = 550;
+  
+  # Draw signal jitter graph
+  my %jg = $rrd->graph($rra,
+    destination => $graphPath,
+    basename => "jitter",
+    periods => [@periods],
+    sources => [ qw(jitter) ],
+    source_labels => [ qw(Jitter) ],
+    title => "Multipath Interference for $mac",
+    extended_legend => "true",
+    width => $gwidth,
+  );
 
  # Draw dbm graph
  my %dbg = $rrd->graph($rra,
@@ -93,37 +93,37 @@ sub drawGraph {
   extended_legend => "true",
   width => $gwidth,
  );
-	
-	# Draw RSSI graph - seperate because of scale issues vs. dbm/jit
-	my %rg = $rrd->graph($rra,
-		destination => $graphPath,
-		basename => "strength",
-		periods => [@periods],
-		sources => [ qw(rssi) ],
-		source_labels => [ ("RSSI") ],
-		title => "Recieved Signal Strength for $mac",
-		extended_legend => "true",
-		width => $gwidth,
-	);
-	
-	# Draw network traffic graph
-	my %ntg = $rrd->graph($rra,
-		destination => $graphPath,
-		basename => "net",
-		periods => [@periods],
-		sources => [ qw(inOct outOct inUcast outUcast inNUcast 
-			outNUcast inError outError inDiscard outDiscard)],
-		source_labels => [ ("Total in", "Total out", "Unicast in", 
-			"Unicast out", "M/Bcast in", "M/Bcast out", 
-			"Errors in", "Errors out", "Discards in", "Discards out") ],
-		title => "Network traffic for $mac",
-		extended_legend => "true",
-		width => $gwidth,
-	);
+  
+  # Draw RSSI graph - seperate because of scale issues vs. dbm/jit
+  my %rg = $rrd->graph($rra,
+    destination => $graphPath,
+    basename => "strength",
+    periods => [@periods],
+    sources => [ qw(rssi) ],
+    source_labels => [ ("RSSI") ],
+    title => "Recieved Signal Strength for $mac",
+    extended_legend => "true",
+    width => $gwidth,
+  );
+  
+  # Draw network traffic graph
+  my %ntg = $rrd->graph($rra,
+    destination => $graphPath,
+    basename => "net",
+    periods => [@periods],
+    sources => [ qw(inOct outOct inUcast outUcast inNUcast 
+      outNUcast inError outError inDiscard outDiscard)],
+    source_labels => [ ("Total in", "Total out", "Unicast in", 
+      "Unicast out", "M/Bcast in", "M/Bcast out", 
+      "Errors in", "Errors out", "Discards in", "Discards out") ],
+    title => "Network traffic for $mac",
+    extended_legend => "true",
+    width => $gwidth,
+  );
 }
 
 find(\&drawGraph, $config->{rrdpath});
-		
+
 #my $rrd = RRD::Simple->new(file=>$rrdfile);
 #if (!-e $rrdfile) {
 #	print "RRA $rrdfile does not exist... Creating...\n";

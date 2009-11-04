@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 # Bongo: Recording the beat of your Canopy jungle
 #
-# Copyright (C) 2008 Jonathan Auer
+# Copyright (C) 2008 Jonathan Auer <jda@tapodi.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ my $cfgFile;
 if (defined $ARGV[0]) {
   $cfgFile = $ARGV[0];
 } else {
-  print "Usage: bongo.pl config.yaml\n";
+  print "Usage: drawgraphs.pl config.yaml\n";
   exit 1;
 }
 my $config = YAML::LoadFile($cfgFile);
@@ -77,6 +77,7 @@ sub drawGraph {
     periods => [@periods],
     sources => [ qw(jitter) ],
     source_labels => [ qw(Jitter) ],
+    source_drawtypes => [ qw(AREA) ],
     title => "Multipath Interference for $mac",
     extended_legend => "true",
     width => $gwidth,
@@ -89,6 +90,7 @@ sub drawGraph {
   periods => [@periods],
   sources => [qw(dbm)],
   source_labels => [qw(dBm)],
+  source_drawtypes => [ qw(AREA) ],
   title => "Signal quality for $mac",
   extended_legend => "true",
   width => $gwidth,
@@ -101,6 +103,7 @@ sub drawGraph {
     periods => [@periods],
     sources => [ qw(rssi) ],
     source_labels => [ ("RSSI") ],
+    source_drawtypes => [ qw(AREA) ],
     title => "Recieved Signal Strength for $mac",
     extended_legend => "true",
     width => $gwidth,

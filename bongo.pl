@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 # Bongo: Recording the beat of your Canopy jungle
 #
-# Copyright (C) 2008  Jonathan Auer <jda@tapodi.net>
+# Copyright (C) 2008  Jon Auer <jda@tapodi.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,12 +17,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 use strict;
+
 use YAML;
 use SNMP::Effective;
 use RRD::Simple;
 use NetAddr::IP;
 use File::Path;
 use Time::Duration;
+use DBI;
 use Data::Dumper;
 
 my $polledHosts = 0; # Number of hosts that we have polled
@@ -58,7 +60,16 @@ my @CanopyOIDs = ('RFC1213-MIB::ifPhysAddress.2',
           'RFC1213-MIB::ifOutDiscards.2',
           '1.3.6.1.4.1.161.19.3.2.2.2.0',
           '1.3.6.1.4.1.161.19.3.2.2.3.0',
-          '1.3.6.1.4.1.161.19.3.2.2.21.0');
+          '1.3.6.1.4.1.161.19.3.2.2.21.0',
+          '1.3.6.1.4.1.161.19.3.2.2.9.0',
+          '1.3.6.1.4.1.161.19.3.2.1.19.0');
+
+# generate int math compat timestamp for SQLite
+sub timestamp {
+  use POSIX qw(strftime);
+  my $now = strftime "%Y%m%d%H%M%S", localtime;
+  return $now;
+}
 
 # Run by SNMP::Effective as callback to process result for host
 sub handleSNMP {
@@ -81,12 +92,17 @@ sub handleSNMP {
     my $outError = $data{'1.3.6.1.2.1.2.2.1.20.2'}{'2'};
     my $inDiscard = $data{'1.3.6.1.2.1.2.2.1.13.2'}{'2'};
     my $outDiscard = $data{'1.3.6.1.2.1.2.2.1.19.2'}{'2'};
-    
+    my $parentAP = $data{'1.3.6.1.4.1.161.19.3.2.2.9.0'}{'1'};
+    my $isNAT = $data{'1.3.6.1.4.1.161.19.3.2.1.19.0'}{'1'};
+
+    $parentAP =~ s/-//g;
+
     $mac = unpack("H12", $mac); # Change from octet string to normal MAC format
     #$dbm = abs($dbm); # Make dbm positive number to ease processing
 
     if ($verbose eq "yes") {
       print "SM: $mac\n RSSI: $rssi\n Jitter: $jitter\n DBM: $dbm\n";
+      print " On AP: $parentAP\n";
       print " Traffic: In: $inOct\tOut: $outOct\n";
       print " Unicast: In: $inUcast\tOut: $outUcast\n";
       print " [M/B]cast: In: $inNUcast\tOut: $outNUcast\n";
@@ -97,7 +113,7 @@ sub handleSNMP {
     
     # Set up RRD path prefix
     my $rrddir = $config->{rrdpath} . "/" . substr($mac, 4, 2) . "/"
-      substr($mac, 6, 2) . "/" . substr($mac, 8, 2);
+      . substr($mac, 6, 2) . "/" . substr($mac, 8, 2);
     my $rrdfile = $rrddir . "/$mac.rra";
     mkpath($rrddir);
     
@@ -121,7 +137,7 @@ sub handleSNMP {
       );
     }
     
-    # Record values	
+    # Record values
     $rrd->update(
       rssi => $rssi,
       jitter => $jitter,
@@ -137,7 +153,22 @@ sub handleSNMP {
       inDiscard => $inDiscard,
       outDiscard => $outDiscard
     ) or warn "RRD update failed for $mac";
+   
+    # Log config settings to DB
+    my $logtime = timestamp();
+    $logtime =~ s/-//g;
+
+    my $dbfile = $rrddir . "/$mac.sqlite";
+
+    my $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile", "", "", 
+      { RaiseError => 1, AutoCommit => 1});
+
+    $dbh->do("CREATE TABLE IF NOT EXISTS history (timestamp integer, ap text, nat integer)");
     
+    my $sth = $dbh->prepare("INSERT INTO history (timestamp, ap, nat) VALUES (?, ?, ?)");
+    $sth->execute($logtime, $parentAP, $isNAT);
+    
+    $dbh->disconnect();
   }
 }
 

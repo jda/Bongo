@@ -15,6 +15,14 @@ All customer SMs on a AP have the same SNMP community
 Disk is cheap. Allocate RRD to store stats at 5-minute
 	intervals for 5 years.
 
+==ToDo==
+Split out config logging into seperate program that 
+ runs less often.
+
+2-Stage polling - Poll for SW version.
+On response Poll OIDs relevent on version.
+Also means frwer outbound packets.
+
 ==Config file==
 
 ==MIBs Tracked==

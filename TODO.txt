@@ -1,0 +1,25 @@
+Web interface for managing AP list
+AP list to be stored in a SQLite DB
+APs referenced internally by a APID.
+
+APID refers to a AP role at a specific site.
+ This allows us to change AP IP address or MAC address 
+ without breaking associations.
+
+AP Poller
+Config change recording and number of clients
+Relatively low run frequency. Once every hour perhaps.
+Stats stored in SQLite or RRD, per APID
+
+SM Poller
+Knows how many SMs to look for and how to find them
+ thanks to the AP poller.
+Needs to poll every SM once every 5 minutes.
+
+Stats stored in SQLite or RRD, per MAC address.
+
+AP/SM reactor:
+Listens for SNMP traps and initiates targeted polling 
+ in response.
+
+

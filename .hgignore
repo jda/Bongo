@@ -1,0 +1,5 @@
+syntax: glob
+
+data/*.sqlite
+data/*.rrd
+

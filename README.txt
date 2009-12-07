@@ -16,6 +16,9 @@ Disk is cheap. Allocate RRD to store stats at 5-minute
 	intervals for 5 years.
 
 ==ToDo==
+Record current SM stats in per-SM sqlite DB
+Record current SM stats in per-run sqlite DB for on the fly queries
+
 Split out config logging into seperate program that 
  runs less often.
 

@@ -1,0 +1,28 @@
+<html>
+<head>
+  <title>Bongo: <TMPL_VAR NAME=title></title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+  <h1>Bongo: <TMPL_VAR NAME=title></h1>
+  <div class="topnav"><a href="?rm=listAPs">List APs</a> | <a href="?rm=addAP">Add AP</a></div>
+  <div class="addbox">
+  <TMPL_IF NAME="form">
+  <table style="text-align:right">
+    <form>
+    <tr>
+      <td>Address:</td>
+      <td><input type="text" name="address" size="30"/></td>
+    </tr>
+    <tr>
+      <td>SNMP Community:</td>
+      <td><input type="text" name="community" size="30"/></td>
+    </tr>
+    <tr>
+      <td colspan="2"><input type="submit" value="Test connection"/></td>
+    </tr>
+    </form>
+    </table>
+  </TMPL_IF>
+  </div>
+</body>

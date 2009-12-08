@@ -3,6 +3,10 @@
 # (c) 2009 Jonathan Auer <jda@tapodi.net> , All rights reserved.
 
 use strict;
+
+use FindBin;
+use lib "$FindBin::Bin/../src";
+
 use Bongo::Web::Admin;
 my $webapp = Bongo::Web::Admin->new();
 $webapp->run();

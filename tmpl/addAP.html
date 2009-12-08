@@ -8,8 +8,16 @@
   <div class="topnav"><a href="?rm=listAPs">List APs</a> | <a href="?rm=addAP">Add AP</a></div>
   <div class="addbox">
   <TMPL_IF NAME="form">
+  <TMPL_IF NAME="form_error">
+    <p style="color: red; font-weight: bold; text-align: center;">
+      One or more fields below were empty. <br />
+      All fields are required.
+    </p>
+  </TMPL_IF>
   <table style="text-align:right">
-    <form>
+    <form method="post">
+    <input type="hidden" name="rm" value="<TMPL_VAR NAME=runmode>"/>
+    <input type="hidden" name="isform" value="true"/>
     <tr>
       <td>Address:</td>
       <td><input type="text" name="address" size="30"/></td>
@@ -19,7 +27,7 @@
       <td><input type="text" name="community" size="30"/></td>
     </tr>
     <tr>
-      <td colspan="2"><input type="submit" value="Test connection"/></td>
+      <td colspan="2"><input type="submit" value="Test Connection"/></td>
     </tr>
     </form>
     </table>

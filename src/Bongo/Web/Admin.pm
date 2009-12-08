@@ -38,11 +38,29 @@ sub listAPs : StartRunmode {
 
 sub addAP : Runmode {
   my $self = shift;
-  my $form = 1;
 
+  # display flags
+  my $form = 1; # by default show form
+  my $form_error = 1; # by default, form is in error
+
+  my $q = $self->query();
+  
+  # if we don't have a isform value the form wasn't submitted so we 
+  # don't show input error
+  if (not $q->param("isform")) {
+    $form_error = 0;
+  }
+
+  # make sure address and community aren't empty.
+  if (($q->param("address") ne "") && ($q->param("community") ne "" )) {
+    $form_error = 0;
+  }
+  
   my %params = (
     title => 'Add AP',
     form => $form,
+    form_error => $form_error,
+    runmode =>  $self->get_current_runmode(),
   );
   $self->template->fill(\%params);
 }

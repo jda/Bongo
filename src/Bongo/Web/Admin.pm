@@ -49,13 +49,13 @@ sub addAP : Runmode {
   # don't show input error
   if (not $q->param("isform")) {
     $form_error = 0;
+  } else {
+    # we have a form. make sure all elements exist - no empty boxes.
+    if (($q->param("address") ne "") && ($q->param("community") ne "" ) 
+      && ($q->param("device_type") ne "")) {
+      $form_error = 0;
+    }
   }
-
-  # make sure address and community aren't empty.
-  if (($q->param("address") ne "") && ($q->param("community") ne "" )) {
-    $form_error = 0;
-  }
-  
   my %params = (
     title => 'Add AP',
     form => $form,

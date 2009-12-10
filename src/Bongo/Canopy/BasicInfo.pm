@@ -6,7 +6,20 @@ use strict;
 
 package Bongo::Canopy::BasicInfo;
 
-use SNMP::Effective;
-use Moose;
+#use SNMP::Simple;
+use Mouse;
 
+use Data::Dumper;
 
+has 'timeout' => (is => 'rw', isa => 'Int');
+
+sub get {
+  my $self = shift;
+  my %args = @_;
+
+  print $args{community} . "\n";
+  print $args{host} . "\n";
+
+}
+
+1;

@@ -11,6 +11,7 @@ use CGI::Application::Plugin::AutoRunmode;
 use CGI::Application::Plugin::ValidateRM;
 use CGI::Application::Plugin::AnyTemplate;
 use HTML::Template;
+
 use Bongo::Canopy::BasicInfo;
 
 use Data::Dumper;
@@ -44,9 +45,9 @@ sub addAP : Runmode {
     title      => 'Add AP',
     form       => 1, # by default, show form
     form_error => 1, # by default, form is in error
-    confirm    => 0, # by default, don't show confirmation
     error_msg  => "",
     runmode    => $self->get_current_runmode(),
+    confirm    => 0,
   );
 
   my $q = $self->query();
@@ -72,7 +73,13 @@ sub addAP : Runmode {
       if ($infoq->name) {
         $params{'form'} = 0;
         $params{'confirm'} = 1; 
-
+        $params{'runmode'} = 'doAddDevice';
+        $params{'dev_name'} = $infoq->name;
+        $params{'dev_community'} = $infoq->community;
+        $params{'dev_address'} = $infoq->host;
+        $params{'dev_version'} = $infoq->swversion;
+        $params{'dev_type'} = $infoq->type;
+      
       } else { # no AP... That's bad.
         $params{'form_error'} = 1;
         $params{'error_msg'} = "Could not contact "
@@ -84,6 +91,15 @@ sub addAP : Runmode {
       $params{'error_msg'} = "One or more fields below were left blank.<br/>All fields are required";  
     }
   }
+  $self->template->fill(\%params);
+}
+
+sub doAddDevice : Runmode {
+  my $self = shift;
+  my %params = (
+    title => "Device Added",
+  );
+
   $self->template->fill(\%params);
 }
 

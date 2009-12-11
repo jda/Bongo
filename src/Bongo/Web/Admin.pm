@@ -11,6 +11,7 @@ use CGI::Application::Plugin::AutoRunmode;
 use CGI::Application::Plugin::ValidateRM;
 use CGI::Application::Plugin::AnyTemplate;
 use HTML::Template;
+use Bongo::Canopy::BasicInfo;
 
 use Data::Dumper;
 
@@ -39,29 +40,50 @@ sub listAPs : StartRunmode {
 sub addAP : Runmode {
   my $self = shift;
 
-  # display flags
-  my $form = 1; # by default show form
-  my $form_error = 1; # by default, form is in error
+  my %params = (
+    title      => 'Add AP',
+    form       => 1, # by default, show form
+    form_error => 1, # by default, form is in error
+    confirm    => 0, # by default, don't show confirmation
+    error_msg  => "",
+    runmode    => $self->get_current_runmode(),
+  );
 
   my $q = $self->query();
   
   # if we don't have a isform value the form wasn't submitted so we 
   # don't show input error
   if (not $q->param("isform")) {
-    $form_error = 0;
+    $params{'form_error'} = 0;
   } else {
     # we have a form. make sure all elements exist - no empty boxes.
     if (($q->param("address") ne "") && ($q->param("community") ne "" ) 
       && ($q->param("device_type") ne "")) {
-      $form_error = 0;
+      $params{'form_error'} = 0;
+      
+      # check if params are valid by trying to contact AP
+      my $infoq = Bongo::Canopy::BasicInfo->new(
+        host      => $q->param("address"), 
+        community => $q->param("community"),
+      );
+      $infoq->poll();
+
+      # check if AP responded
+      if ($infoq->name) {
+        $params{'form'} = 0;
+        $params{'confirm'} = 1; 
+
+      } else { # no AP... That's bad.
+        $params{'form_error'} = 1;
+        $params{'error_msg'} = "Could not contact "
+          . $q->param("address")
+          . " using community "
+          . $q->param("community");
+      }
+    } else {
+      $params{'error_msg'} = "One or more fields below were left blank.<br/>All fields are required";  
     }
   }
-  my %params = (
-    title => 'Add AP',
-    form => $form,
-    form_error => $form_error,
-    runmode =>  $self->get_current_runmode(),
-  );
   $self->template->fill(\%params);
 }
 

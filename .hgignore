@@ -1,7 +1,0 @@
-syntax: glob
-
-data/*.sqlite
-data/*.rrd
-*.swp
-*.log
-

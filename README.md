@@ -1,6 +1,6 @@
-=Bongo: Recording the beat of your Canopy jungle=
+# Bongo: Recording the beat of your Canopy jungle
 
-==General idea==
+## General idea
 Given a list of AP LUID Subnets:
 	Discover hosts within subnet that are alive
 	Poll every host for the vital statistics
@@ -8,14 +8,14 @@ Given a list of AP LUID Subnets:
 	Record data in RRD - one per MAC address
 		Subfolders by MAC prefix
 
-==Assumptions==
+## Assumptions
 All customer SMs on a AP have the same SNMP community
 	Your SM Backhauls should not, instead they should 
 	be graphed in your EMS/Cacti/Etc, not Bongo.
 Disk is cheap. Allocate RRD to store stats at 5-minute
 	intervals for 5 years.
 
-==ToDo==
+## ToDo
 Record current SM stats in per-SM sqlite DB
 Record current SM stats in per-run sqlite DB for on the fly queries
 
@@ -26,9 +26,9 @@ Split out config logging into seperate program that
 On response Poll OIDs relevent on version.
 Also means frwer outbound packets.
 
-==Config file==
+## Config file
 
-==MIBs Tracked==
+## MIBs Tracked
 RSSI: 1.3.6.1.4.1.161.19.3.2.2.2.0
 Jitter: 1.3.6.1.4.1.161.19.3.2.2.3.0
 RFC1213-MIB::ifPhysAddress.2

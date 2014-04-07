@@ -29,16 +29,20 @@ Also means frwer outbound packets.
 ## Config file
 
 ## MIBs Tracked
-RSSI: 1.3.6.1.4.1.161.19.3.2.2.2.0
-Jitter: 1.3.6.1.4.1.161.19.3.2.2.3.0
-RFC1213-MIB::ifPhysAddress.2
-RFC1213-MIB::ifInOctets.2'
-RFC1213-MIB::ifOutOctets.2'
-RFC1213-MIB::ifInUcastPkts.2'
-RFC1213-MIB::ifOutUcastPkts.2'
-RFC1213-MIB::ifInNUcastPkts.2'
-RFC1213-MIB::ifOutNUcastPkts.2'
-RFC1213-MIB::ifInErrors.2'
-RFC1213-MIB::ifOutErrors.2'
-RFC1213-MIB::ifInDiscards.2'
-RFC1213-MIB::ifOutDiscards.2'
+* RSSI: 1.3.6.1.4.1.161.19.3.2.2.2.0
+* Jitter: 1.3.6.1.4.1.161.19.3.2.2.3.0
+* dBm: 1.3.6.1.4.1.161.19.3.2.2.21.0
+* Parent AP: 1.3.6.1.4.1.161.19.3.2.2.9.0
+* NAT mode: 1.3.6.1.4.1.161.19.3.2.1.19.0
+* RFC1213-MIB::ifPhysAddress.2
+* RFC1213-MIB::ifInOctets.2
+* RFC1213-MIB::ifOutOctets.2
+* RFC1213-MIB::ifInUcastPkts.2
+* RFC1213-MIB::ifOutUcastPkts.2
+* RFC1213-MIB::ifInNUcastPkts.2
+* RFC1213-MIB::ifOutNUcastPkts.2
+* RFC1213-MIB::ifInErrors.2
+* RFC1213-MIB::ifOutErrors.2
+* RFC1213-MIB::ifInDiscards.2
+* RFC1213-MIB::ifOutDiscards.2
+

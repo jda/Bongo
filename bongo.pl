@@ -26,6 +26,7 @@ use File::Path;
 use Time::Duration;
 use DBI;
 use Data::Dumper;
+use Scalar::Util qw(looks_like_number);
 
 my $polledHosts = 0; # Number of hosts that we have polled
 my $startTime = time();
@@ -94,6 +95,21 @@ sub handleSNMP {
     my $outDiscard = $data{'1.3.6.1.2.1.2.2.1.19.2'}{'2'};
     my $parentAP = $data{'1.3.6.1.4.1.161.19.3.2.2.9.0'}{'1'};
     my $isNAT = $data{'1.3.6.1.4.1.161.19.3.2.1.19.0'}{'1'};
+
+    my $baddata = 0;
+    if (!looks_like_number($rssi)) {
+      print "Bad RSSI from $host/$mac\n";
+    }
+    if (!looks_like_number($jitter)) {
+      print "Bad Jitter from $host/$mac\n";	
+    }
+    if (!looks_like_number($dbm)) {
+      print "Bad dBm from $host/$mac\n";
+    }
+
+    if ($baddata == 1) {
+      return;
+    }
 
     $parentAP =~ s/-//g;
 
@@ -176,13 +192,25 @@ sub handleSNMP {
 my %preHosts;
 foreach my $apgroup (@{$config->{ranges}}) {
   my $cidr = new NetAddr::IP($apgroup->{cidr});
-  
+
+  # Get first IP in subnet (AP) for later)
+  my $ap_first = $cidr->first();
+  my @ap_first_half = split(/\//, $ap_first);
+  my $ap = $ap_first_half[0];
+ 
   foreach my $host (@{$cidr->hostenumref()}) {
     my @h = split(/\//, $host);
     my $ip = $h[0];
+
+    # skip if host is ap 
+    if ($ip eq $ap) {
+        next;
+    }
+
     $preHosts{$ip}++;
   }
 }
+
 my @snmpHosts = keys %preHosts;
 
 # Setup and run SNMP poller

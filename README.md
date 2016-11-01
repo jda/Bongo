@@ -1,4 +1,5 @@
 # Bongo: Recording the beat of your Canopy jungle
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
 
 ## General idea
 Given a list of AP LUID Subnets:
